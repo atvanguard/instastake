@@ -1,0 +1,22 @@
+{
+  "name": "instastake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atvanguard/instastake.git"
+  },
+  "author": "Arpit Agarwal <93arpit@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/atvanguard/instastake/issues"
+  },
+  "homepage": "https://github.com/atvanguard/instastake#readme",
+  "devDependencies": {
+    "truffle": "^5.0.37"
+  }
+}
