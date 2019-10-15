@@ -18,5 +18,9 @@
   "homepage": "https://github.com/atvanguard/instastake#readme",
   "devDependencies": {
     "truffle": "^5.0.37"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^2.3.0",
+    "matic-protocol": "github:maticnetwork/contracts#aee2433b2cb76b8bf2ad53736a9e6340cd3d9f15"
   }
 }
