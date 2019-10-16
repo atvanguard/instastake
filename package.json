@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@openzeppelin/contracts": "^2.3.0",
-    "matic-protocol": "github:maticnetwork/contracts#aee2433b2cb76b8bf2ad53736a9e6340cd3d9f15"
+    "matic-protocol": "github:maticnetwork/contracts#aee2433b2cb76b8bf2ad53736a9e6340cd3d9f15",
+    "synthetix": "github:atvanguard/synthetix#b9d1f225b26e723961a20f3482b9552a4b431480"
   }
 }
