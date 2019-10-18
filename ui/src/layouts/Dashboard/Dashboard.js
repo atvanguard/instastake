@@ -67,7 +67,7 @@ const Dashboard = props => {
           </Suspense>
         </main>
       </div>
-      <ChatBar />
+      {/* <ChatBar /> */}
     </div>
   );
 };

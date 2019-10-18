@@ -15,27 +15,27 @@ const routes = [
   {
     path: '/',
     exact: true,
-    component: () => <Redirect to="/presentation" />
+    component: () => <Redirect to="/dashboard" />
   },
-  {
-    path: '/auth',
-    component: AuthLayout,
-    routes: [
-      {
-        path: '/auth/login',
-        exact: true,
-        component: lazy(() => import('views/Login'))
-      },
-      {
-        path: '/auth/register',
-        exact: true,
-        component: lazy(() => import('views/Register'))
-      },
-      {
-        component: () => <Redirect to="/errors/error-404" />
-      }
-    ]
-  },
+  // {
+  //   path: '/auth',
+  //   component: AuthLayout,
+  //   routes: [
+  //     {
+  //       path: '/auth/login',
+  //       exact: true,
+  //       component: lazy(() => import('views/Login'))
+  //     },
+  //     {
+  //       path: '/auth/register',
+  //       exact: true,
+  //       component: lazy(() => import('views/Register'))
+  //     },
+  //     {
+  //       component: () => <Redirect to="/errors/error-404" />
+  //     }
+  //   ]
+  // },
   {
     path: '/errors',
     component: ErrorLayout,
@@ -84,13 +84,13 @@ const routes = [
         exact: true,
         component: lazy(() => import('views/Chat'))
       },
+      // {
+      //   path: '/dashboards/analytics',
+      //   exact: true,
+      //   component: DashboardAnalyticsView
+      // },
       {
-        path: '/dashboards/analytics',
-        exact: true,
-        component: DashboardAnalyticsView
-      },
-      {
-        path: '/dashboards/default',
+        path: '/dashboard/',
         exact: true,
         component: DashboardDefaultView
       },

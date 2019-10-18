@@ -161,13 +161,13 @@ const TopBar = props => {
     setOpenSearchPopover(false);
   };
 
-  const popularSearches = [
-    'Devias React Dashboard',
-    'Devias',
-    'Admin Pannel',
-    'Project',
-    'Pages'
-  ];
+  // const popularSearches = [
+  //   'Devias React Dashboard',
+  //   'Devias',
+  //   'Admin Pannel',
+  //   'Project',
+  //   'Pages'
+  // ];
 
   return (
     <AppBar
@@ -179,11 +179,11 @@ const TopBar = props => {
         <RouterLink to="/">
           <img
             alt="Logo"
-            src="/images/logos/logo--white.svg"
+            src="/images/react.png"
           />
         </RouterLink>
         <div className={classes.flexGrow} />
-        <Hidden smDown>
+        {/* <Hidden smDown>
           <div
             className={classes.search}
             ref={searchRef}
@@ -196,8 +196,8 @@ const TopBar = props => {
               placeholder="Search people &amp; places"
               value={searchValue}
             />
-          </div>
-          <Popper
+          </div> */}
+          {/* <Popper
             anchorEl={searchRef.current}
             className={classes.searchPopper}
             open={openSearchPopover}
@@ -224,17 +224,17 @@ const TopBar = props => {
                 </List>
               </Paper>
             </ClickAwayListener>
-          </Popper>
-          <Button
+          </Popper> */}
+          {/* <Button
             className={classes.trialButton}
             onClick={handlePricingOpen}
             variant="contained"
           >
             <LockIcon className={classes.trialIcon} />
             Trial expired
-          </Button>
-        </Hidden>
-        <Hidden mdDown>
+          </Button> */}
+        {/* </Hidden> */}
+        {/* <Hidden mdDown>
           <IconButton
             className={classes.notificationsButton}
             color="inherit"
@@ -257,7 +257,7 @@ const TopBar = props => {
             <InputIcon className={classes.logoutIcon} />
             Sign out
           </Button>
-        </Hidden>
+        </Hidden> */}
         <Hidden lgUp>
           <IconButton
             color="inherit"
