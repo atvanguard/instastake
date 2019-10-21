@@ -9,7 +9,6 @@ contract InstaStake is FundManagerAcl {
   uint256 constant internal MAX_QTY = 10 ** 28; // 10B tokens
 
   KyberNetworkProxyInterface public kyberProxy;
-  IERC20 constant internal ETH_TOKEN_ADDRESS = IERC20(0x00eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee);
   address payable public vault;
 
   struct Portfolio {
