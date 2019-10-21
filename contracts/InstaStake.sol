@@ -8,7 +8,7 @@ import { FundManagerAcl } from "./FundManagerAcl.sol";
 contract InstaStake is FundManagerAcl {
   uint256 constant internal MAX_QTY = 10 ** 28; // 10B tokens
 
-  KyberNetworkProxyInterface public kyber;
+  KyberNetworkProxyInterface public kyberProxy;
   address payable public vault;
 
   struct Portfolio {
@@ -16,13 +16,13 @@ contract InstaStake is FundManagerAcl {
     uint8[] weights;
   }
 
-  uint8 portfolioId;
+  uint8 public portfolioId;
   // portfolioId to Portfolio
   mapping(uint8 => Portfolio) portfolios;
   mapping(address => address) public iTokens;
 
-  constructor(address _kyber, address payable _vault) public {
-    kyber = KyberNetworkProxyInterface(_kyber);
+  constructor(address _kyberProxy, address payable _vault) public {
+    kyberProxy = KyberNetworkProxyInterface(_kyberProxy);
     vault = _vault;
   }
 
@@ -35,26 +35,38 @@ contract InstaStake is FundManagerAcl {
     portfolios[portfolioId++] = Portfolio(tokens, weights);
   }
 
-  function buy(uint8 portfolioStrategy, IERC20 paymentToken, uint256 amount) external {
+  function buy(uint8 portfolioStrategy, IERC20 srcToken, uint256 amount) external {
     Portfolio storage portfolio = portfolios[portfolioStrategy];
     require(portfolio.tokens.length > 0, "Invalid portfolio ID");
+    require(
+      srcToken.transferFrom(msg.sender, address(this), amount),
+      "srcToken transfer failed"
+    );
+    require(
+      srcToken.approve(address(kyberProxy), amount),
+      "srcToken approve failed"
+    );
     for (uint8 i = 0; i < portfolio.tokens.length; i++) {
-      uint256 _amount = (amount * portfolio.weights[i]) / 100;
+      IERC20 destToken = portfolio.tokens[i];
+      uint256 srcQty = (amount * portfolio.weights[i]) / 100;
+      // Get the minimum conversion rate
+      (uint256 minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, srcQty);
       swapTokenToToken(
-        paymentToken,
-        _amount,
-        portfolio.tokens[i],
-        // @todo check how kyber.getExpectedRate works
-        0 // will the trade never fail if minConversionRate == 0 ?
+        srcToken,
+        srcQty,
+        destToken,
+        minConversionRate
       );
+
       // mint equivalent amount of iTokens to the users account
-      IToken(iTokens[address(portfolio.tokens[i])]).mint(msg.sender, _amount);
+      // @todo mint in proportion to pool size
+      IToken(iTokens[address(portfolio.tokens[i])]).mint(msg.sender, srcQty);
     }
   }
 
   function swapTokenToToken(IERC20 src, uint srcAmount, IERC20 dest, uint minConversionRate) internal {
     bytes memory hint;
-    kyber.tradeWithHint(
+    kyberProxy.tradeWithHint(
       src,
       srcAmount,
       dest,
@@ -65,4 +77,17 @@ contract InstaStake is FundManagerAcl {
       hint
     );
   }
+
+  // function buyDummy(IERC20 srcToken, uint256 amount, IERC20 destToken) public {
+  //   require(
+  //     srcToken.transferFrom(msg.sender, address(this), amount),
+  //     "srcToken transfer failed"
+  //   );
+  //   require(
+  //     srcToken.approve(address(kyberProxy), amount),
+  //     "srcToken approve failed"
+  //   );
+  //   (uint256 minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, amount);
+  //   swapTokenToToken(srcToken, amount, destToken, minConversionRate);
+  // }
 }
