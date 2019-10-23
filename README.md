@@ -7,5 +7,6 @@ ganache-cli --db db --accounts 10 --defaultBalanceEther 1000 --mnemonic 'gesture
 
 - Run test
 ```
-truffle test
+npm run compile
+npm test
 ```
