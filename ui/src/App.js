@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import MomentUtils from '@date-io/moment';
-import { Provider as StoreProvider } from 'react-redux';
+// import { Provider as StoreProvider } from 'react-redux';
 import { ThemeProvider } from '@material-ui/styles';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { renderRoutes } from 'react-router-config';
 
 import theme from './theme';
-import { configureStore } from './store';
+// import { configureStore } from './store';
+import getWeb3 from './utils/getWeb3';
 import routes from './routes';
 import {
   ScrollReset,
@@ -23,11 +24,17 @@ import './mock';
 import './assets/scss/index.scss';
 
 const history = createBrowserHistory();
-const store = configureStore();
+// const store = configureStore();
 
 const App = () => {
+  useEffect(() => {
+    const web3 = getWeb3();
+
+    // do stuff, pass it down props blahblah
+  }, []);
+
   return (
-    <StoreProvider store={store}>
+    // <StoreProvider store={store}>
       <ThemeProvider theme={theme}>
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <Router history={history}>
@@ -38,7 +45,7 @@ const App = () => {
           </Router>
         </MuiPickersUtilsProvider>
       </ThemeProvider>
-    </StoreProvider>
+    // </StoreProvider>
   );
 };
 
