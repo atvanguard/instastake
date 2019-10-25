@@ -10,3 +10,10 @@ ganache-cli --db db --accounts 10 --defaultBalanceEther 1000 --mnemonic 'gesture
 npm run compile
 npm test
 ```
+
+- Run UI ( in another terminal )
+```
+cd ui
+yarn
+yarn start
+```

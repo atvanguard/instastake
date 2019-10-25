@@ -1,8 +1,7 @@
-import React, { Fragment, useEffect } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Drawer, Divider, Paper, Avatar, Typography } from '@material-ui/core';
 import { Hidden } from '@material-ui/core';
@@ -10,6 +9,7 @@ import { Hidden } from '@material-ui/core';
 import useRouter from 'utils/useRouter';
 import { Navigation } from 'components';
 import navigationConfig from './navigationConfig';
+import { AppContext } from '../../../../AppContext';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,12 +45,14 @@ const NavBar = props => {
 
   const classes = useStyles();
   const router = useRouter();
-  const session = useSelector(state => state.session);
+  const { web3 } = useContext(AppContext);
 
   useEffect(() => {
     if (openMobile) {
       onMobileClose && onMobileClose();
     }
+    
+    console.log(web3);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.location.pathname]);
@@ -62,16 +64,14 @@ const NavBar = props => {
           alt="Person"
           className={classes.avatar}
           component={RouterLink}
-          src={session.user.avatar}
           to="/profile/1/timeline"
         />
         <Typography
           className={classes.name}
           variant="h4"
         >
-          {session.user.first_name} {session.user.last_name}
         </Typography>
-        <Typography variant="body2">{session.user.bio}</Typography>
+        <Typography variant="body2"></Typography>
       </div>
       <Divider className={classes.divider} />
       <nav className={classes.navigation}>
