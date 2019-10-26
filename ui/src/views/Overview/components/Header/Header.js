@@ -54,7 +54,7 @@ const Header = props => {
             gutterBottom
             variant="h3"
           >
-            Good Morning, {session.user.first_name}
+            Good Pasta, {session.user.first_name}
           </Typography>
           <Typography
             gutterBottom

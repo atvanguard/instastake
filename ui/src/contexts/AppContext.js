@@ -1,11 +1,12 @@
 import React, { createContext, useEffect, useState } from 'react';
 
-import InstaStake from './contracts/InstaStake.json'
-import getWeb3 from './utils/getWeb3';
+import InstaStake from '../contracts/InstaStake.json'
+import getWeb3 from '../utils/getWeb3';
 
 export const AppContext = createContext({
   accounts: null,
   contract: null,
+  isReady: false,
   web3: null
 })
 
@@ -15,6 +16,7 @@ export const AppContextProvider = (props) => {
   const { children } = props;
   const [accounts, setAccounts] = useState(null);
   const [contract, setContract] = useState(null);
+  const [isReady, setIsReady] = useState(false);
   const [web3, setWeb3] = useState(null);
 
   useEffect(() => {
@@ -30,14 +32,14 @@ export const AppContextProvider = (props) => {
         InstaStake.abi,
         deployedNetwork && deployedNetwork.address,
       );
-      console.log(instance);
+      console.log('instance => ', instance);
       setWeb3(w3);
       setAccounts(accounts);
       setContract(instance);
     }
 
     getWeb3Shit();
-  }, []);
+  }, []); 
 
   return (
     <AppContext.Provider value={{
