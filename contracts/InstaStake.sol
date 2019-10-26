@@ -1,7 +1,6 @@
 pragma solidity ^0.5.11;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { IToken } from "./IToken.sol";
 import { KyberNetworkProxyInterface } from "./kyber/KyberNetworkProxyInterface.sol";
 import { FundManagerAcl } from "./FundManagerAcl.sol";
 import { Investor } from "./Investor.sol";
@@ -38,33 +37,48 @@ contract InstaStake is FundManagerAcl {
     }
   }
 
-  function buy(uint8 portfolioStrategy, IERC20 srcToken, uint256 amount) external {
+  function buy(uint8 portfolioStrategy, IERC20[] calldata srcTokens, uint256 amount) external {
     Portfolio storage portfolio = portfolios[portfolioStrategy];
     require(portfolio.assets.length > 0, "Invalid portfolio ID");
-    require(
-      srcToken.transferFrom(msg.sender, address(this), amount),
-      "srcToken transfer failed"
-    );
-    require(
-      srcToken.approve(address(kyberProxy), amount),
-      "srcToken approve failed"
-    );
     for (uint8 i = 0; i < portfolio.assets.length; i++) {
       Asset storage asset = portfolio.assets[i];
       IERC20 destToken = asset.token;
+      IERC20 srcToken = srcTokens[i];
       uint256 srcQty = (amount * asset.weight) / 100;
-
-      // Get the minimum conversion rate
-      (uint256 minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, srcQty);
       address payable destAddress = address(uint160(address(asset.tokenInvestor)));
-      swapTokenToToken(
-        srcToken,
-        srcQty,
-        destToken,
-        destAddress,
-        minConversionRate
-      );
-      asset.tokenInvestor.invest(msg.sender, destToken.balanceOf(destAddress)); // if partial fills is a thing, srcQty will be a problem
+
+      uint256 destAmount;
+      if (address(destToken) == address(srcToken)) {
+        // user wants to pay directly with the destToken
+        require(
+          destToken.transferFrom(msg.sender, destAddress, srcQty),
+          "destToken.transferFrom failed"
+        );
+        destAmount = srcQty;
+      } else {
+        // obtain destToken from Kyber swap
+        require(
+          srcToken.transferFrom(msg.sender, address(this), amount),
+          "srcToken transfer failed"
+        );
+        require(
+          srcToken.approve(address(kyberProxy), amount),
+          "srcToken approve failed"
+        );
+        // Get the minimum conversion rate
+        uint256 minConversionRate;
+        (minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, srcQty);
+        swapTokenToToken(
+          srcToken,
+          srcQty,
+          destToken,
+          destAddress,
+          minConversionRate
+        );
+        // @todo cehck partial fills
+        destAmount = (srcQty / (10 ** 18)) * minConversionRate; // works for whole numbers of srcQty
+      }
+      asset.tokenInvestor.invest(msg.sender, destAmount);
     }
   }
 

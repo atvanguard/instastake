@@ -5,8 +5,11 @@
     },
     "tokens": {
       "knc": "0x8c13AFB7815f10A8333955854E6ec7503eD841B7",
-      "matic": "0x3750bE154260872270EbA56eEf89E78E6E21C1D9",
-      "snx": "0xe19Ec968c15f487E96f631Ad9AA54fAE09A67C8c"
+      "omg": "0x3750bE154260872270EbA56eEf89E78E6E21C1D9"
+    },
+    "synthetix": {
+        "Synthetix": "0xcB09297151aE94f46a73c2d7c04B0F2c30f64494",
+        "FeePool": "0xc7a5b080B59621281fa9bd9ea40fB6D8942a69D2"
     }
   }
 }

@@ -1,8 +1,6 @@
-- Clone [KyberNetwork/workshop](https://github.com/KyberNetwork/workshop)
-
-- Run Kyber ganache snapshot
+- Run ganache (Contains Kyber and synthetix contracts)
 ```
-ganache-cli --db db --accounts 10 --defaultBalanceEther 1000 --mnemonic 'gesture rather obey video awake genuine patient base soon parrot upset lounge' --networkId 5777
+ganache-cli --db db --accounts 10 --defaultBalanceEther 1000000000000 --mnemonic 'gesture rather obey video awake genuine patient base soon parrot upset lounge' --networkId 5777 -l 0x7a1200 -t 2018-03-13T00:00:00
 ```
 
 - Run test
