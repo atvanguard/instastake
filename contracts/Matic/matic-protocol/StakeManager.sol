@@ -22,6 +22,7 @@ contract StakeManager is Ownable {
   uint256 public validatorID;
   mapping (uint256 => Validator) public validators;
   IERC20 public token;
+  uint256 public totalDelegated;
 
   constructor(address _token) public {
     token = IERC20(_token);
@@ -64,6 +65,7 @@ contract StakeManager is Ownable {
     } else {
        validators[validatorId].delegators[index].amount += amount;
     }
+    totalDelegated += amount;
   }
 
   // Make sure distributeRewards is called before this
@@ -77,6 +79,7 @@ contract StakeManager is Ownable {
     );
     delegate.amount -= amount;
     validator.bondedAmount -= amount;
+    totalDelegated -= amount;
     require(
       token.transfer(msg.sender, delegate.amount),
       "Reward Transfer failed"
@@ -98,6 +101,7 @@ contract StakeManager is Ownable {
     for (uint256 i = 0; i < validator.delegators.length; i++) {
       uint256 reward = (validator.reward * validator.delegators[i].amount) / totalStake;
       validator.delegators[i].amount += reward;
+      totalDelegated += reward;
       validator.reward -= reward;
     }
     // give reward to validator

@@ -10,8 +10,6 @@ const StakeManager = artifacts.require('StakeManager')
 
 const KyberNetworkProxyInterface = artifacts.require('KyberNetworkProxyInterface')
 const Matic = artifacts.require('Matic')
-const SNX = artifacts.require('SNX')
-
 
 contract('InstaStake', async function(accounts) {
   let userWallet = accounts[4];
@@ -19,8 +17,7 @@ contract('InstaStake', async function(accounts) {
   before(async function() {
     this.instaStake = await InstaStake.deployed()
     this.KNCInstance = await Matic.at(config.contracts.tokens.knc)
-    this.maticToken = await Matic.at(config.contracts.tokens.matic)
-    this.snxToken = await SNX.at(config.contracts.tokens.snx)
+    this.maticToken = await Matic.at(config.contracts.tokens.omg)
     this.networkProxyInstance = await KyberNetworkProxyInterface.at(config.contracts.kyber.KyberNetworkProxy)
   })
 
@@ -69,34 +66,33 @@ contract('InstaStake', async function(accounts) {
     const amount = web3.utils.toWei(web3.utils.toBN(2))
     await this.KNCInstance.approve(this.instaStake.address, amount, { from: userWallet });
 
-    // console.log('maticToken.balanceOf(Vault)', (await this.maticToken.balanceOf(this.vault.address)).toString())
-    // console.log('snxToken.balanceOf(Vault)', (await this.snxToken.balanceOf(this.vault.address)).toString())
     console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
     console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
     const buy = await this.instaStake.buy(
       this.portfolio,
-      this.KNCInstance.address,
+      [this.KNCInstance.address],
       amount,
       { from: userWallet }
     );
-    // console.log('buy', buy)
+    console.log('bought into portfolio')
     console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
     console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
-    console.log('matic token invested pool size', (await this.maticToken.balanceOf(this.stakeManager.address)).toString())
+    const investedPoolSize = await this.stakeManager.totalDelegated()
+    console.log('matic token invested pool size', investedPoolSize.toString())
     console.log('matic token investor ROI',
-      (await this.maticToken.balanceOf(this.stakeManager.address)).div(await this.maticInvestor.balanceOf(userWallet)).toString()
+      investedPoolSize.div(await this.maticInvestor.balanceOf(userWallet)).toString()
     )
-    // console.log('snxToken.balanceOf(Vault)', (await this.snxToken.balanceOf(this.vault.address)).toString())
   })
 
   it('rewardValidator', async function() {
-    const reward = await this.maticToken.balanceOf(userWallet)
+    const reward = web3.utils.toWei(web3.utils.toBN(10))
     await this.maticToken.approve(this.stakeManager.address, reward, { from: userWallet });
     await this.stakeManager.rewardValidator(this.validatorId, reward, { from: userWallet })
     await this.stakeManager.distributeRewards(this.validatorId);
-    console.log('matic token invested pool size', (await this.maticToken.balanceOf(this.stakeManager.address)).toString())
+    const investedPoolSize = await this.stakeManager.totalDelegated()
+    console.log('matic token invested pool size', investedPoolSize.toString())
     console.log('matic token investor ROI',
-      (await this.maticToken.balanceOf(this.stakeManager.address)).div(await this.maticInvestor.balanceOf(userWallet)).toString()
+      investedPoolSize.div(await this.maticInvestor.balanceOf(userWallet)).toString()
     )
   })
 })
