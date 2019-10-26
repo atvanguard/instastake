@@ -23,7 +23,7 @@ contract InstaStake is FundManagerAcl {
 
   uint8 public portfolioId;
   // portfolioId to Portfolio
-  mapping(uint8 => Portfolio) portfolios;
+  mapping(uint8 => Portfolio) public portfolios;
 
   constructor(address _kyberProxy) public {
     kyberProxy = KyberNetworkProxyInterface(_kyberProxy);
