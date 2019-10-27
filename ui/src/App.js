@@ -21,7 +21,7 @@ import './mixins/validate';
 import './mixins/prismjs';
 import './mock';
 import './assets/scss/index.scss';
-import { AppContextConsumer, AppContextProvider } from './AppContext';
+import { AppContextConsumer, AppContextProvider } from './contexts/AppContext';
 
 const history = createBrowserHistory();
 

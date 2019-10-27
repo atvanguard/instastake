@@ -9,7 +9,7 @@ import { Hidden } from '@material-ui/core';
 import useRouter from 'utils/useRouter';
 import { Navigation } from 'components';
 import navigationConfig from './navigationConfig';
-import { AppContext } from '../../../../AppContext';
+import { AppContext } from '../../../../contexts/AppContext';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,8 +51,6 @@ const NavBar = props => {
     if (openMobile) {
       onMobileClose && onMobileClose();
     }
-    
-    console.log(web3);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.location.pathname]);
