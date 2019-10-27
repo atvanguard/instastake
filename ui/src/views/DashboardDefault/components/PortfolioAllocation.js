@@ -6,21 +6,32 @@ import { AppContext } from '../../../contexts/AppContext';
 
 const PortfolioAllocation = props => {
   const { web3 } = useContext(AppContext);
-  const [data, setData] = useState({ data: [] });
+  const [portfolios, setPortfolios] = useState(null);
 
   useEffect(() => {
     const init = async () => {
       if (web3) {
-        await web3.getPortfolios()
-        // setData();
+        const portfolios = await web3.getPortfolios()
+        console.log(portfolios)
+        setPortfolios(portfolios);
       }
-      setData([ ['Blueberry', 44], ['Strawberry', 23] ]);
+      // else {
+      //   setPortfolios([[ ['Blueberry', 44], ['Strawberry', 23] ]]);
+      // }
     }
     init();
   }, [web3]);
 
   return (
-    <PieChart data = {data} />
+    <div>
+      {portfolios && portfolios.length ? (
+        portfolios.map((tokenDistribution, index) => {
+          return <PieChart data = {tokenDistribution} key={index} />
+        })
+      ) : (
+        <PieChart data = {[ ['Blueberry', 44], ['Strawberry', 23] ]} />
+      )}
+    </div>
   )
 }
 

@@ -22,6 +22,7 @@ contract('InstaStake', async function(accounts) {
   })
 
   it('createPortfolio', async function() {
+    console.log('InstaStake.address', this.instaStake.address)
     this.stakeManager = await StakeManager.new(this.maticToken.address)
     this.maticInvestor = await MaticInvestor.new(this.stakeManager.address, this.maticToken.address)
     this.portfolio = await this.instaStake.portfolioId()
