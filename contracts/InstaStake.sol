@@ -23,7 +23,7 @@ contract InstaStake is FundManagerAcl {
 
   uint8 public portfolioId;
   // portfolioId to Portfolio
-  mapping(uint8 => Portfolio) public portfolios;
+  mapping(uint8 => Portfolio) portfolios;
 
   constructor(address _kyberProxy) public {
     kyberProxy = KyberNetworkProxyInterface(_kyberProxy);
@@ -35,6 +35,24 @@ contract InstaStake is FundManagerAcl {
       Asset memory asset = Asset(tokens[i], investorContracts[i], weights[i]);
       portfolio.assets.push(asset);
     }
+  }
+
+  function getPortfolio(uint8 portfolioStrategy)
+    public view
+    returns(address[] memory tokens, uint8[] memory weights)
+  {
+    Portfolio storage portfolio = portfolios[portfolioStrategy];
+    uint256 length = portfolio.assets.length;
+    tokens = new address[](length);
+    weights = new uint8[](length);
+
+    for (uint256 i = 0; i < length; i++) {
+      Asset storage asset = portfolio.assets[i];
+      tokens[i] = address(asset.token);
+      weights[i] = asset.weight;
+    }
+
+    // return(tokens, weights);
   }
 
   function buy(uint8 portfolioStrategy, IERC20[] calldata srcTokens, uint256 amount) external {

@@ -1,53 +1,34 @@
 import React, { createContext, useEffect, useState } from 'react';
 
-import InstaStake from '../contracts/InstaStake.json'
-import getWeb3 from '../utils/getWeb3';
+import Web3Client from '../contracts/Web3Client'
 
-export const AppContext = createContext({
-  accounts: null,
-  contract: null,
-  isReady: false,
-  web3: null
-})
+// export const AppContext = createContext({
+//   isReady: false,
+//   web3: null
+// })
+
+export const AppContext = createContext(null)
 
 export const AppContextConsumer = AppContext.Consumer;
 
 export const AppContextProvider = (props) => {
   const { children } = props;
-  const [accounts, setAccounts] = useState(null);
-  const [contract, setContract] = useState(null);
   const [isReady, setIsReady] = useState(false);
-  const [web3, setWeb3] = useState(null);
+  let [web3, setWeb3] = useState(null);
 
   useEffect(() => {
-    const getWeb3Shit = async () => {
-      const w3 = await getWeb3();
-      // Use web3 to get the user's accounts.
-      const accounts = await w3.eth.getAccounts();
-      console.log('accounts => ', accounts);
-      // Get the contract instance.
-      const networkId = await w3.eth.net.getId();
-      const deployedNetwork = InstaStake.networks[networkId];
-      const instance = new w3.eth.Contract(
-        InstaStake.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
-      console.log('instance => ', instance);
-      setWeb3(w3);
-      setAccounts(accounts);
-      setContract(instance);
+    const initializeWeb3 = async () => {
+      let _web3 = new Web3Client()
+      await _web3.initialize()
+      setWeb3(_web3);
     }
 
-    getWeb3Shit();
-  }, []); 
+    initializeWeb3();
+  }, []);
 
   return (
-    <AppContext.Provider value={{
-      accounts,
-      contract,
-      web3
-    }}>
-      {children}
+    <AppContext.Provider value={{web3}}>
+      { children }
     </AppContext.Provider>
   )
 }

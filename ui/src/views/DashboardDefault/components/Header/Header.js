@@ -30,10 +30,14 @@ const Header = props => {
   const [currentAccount, setCurrentAccount] = useState();
 
   useEffect(() => {
-    console.log('jen is hot -> ', web3);
-
-    setCurrentAccount('pastapi');
-  }, []);
+    const init = async () => {
+      if (web3) {
+        const account = await web3.getAccount()
+        setCurrentAccount(account);
+      }
+    }
+    init();
+  }, [web3]);
 
   const classes = useStyles();
 
@@ -54,7 +58,7 @@ const Header = props => {
         gutterBottom
         variant="h3"
       >
-        Good Fucking, {currentAccount}
+        Happy Investing, {currentAccount}
       </Typography>
       <Typography variant="subtitle1">Here's what's happening</Typography>
     </div>
