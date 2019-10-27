@@ -2857,10 +2857,10 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-chart.js@^2.7.3:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.8.0.tgz#b703b10d0f4ec5079eaefdcd6ca32dc8f826e0e9"
-  integrity sha512-Di3wUL4BFvqI5FB5K26aQ+hvWh8wnP9A3DWGvXHVkO13D3DSnaSsdZx29cXlEsYKVkn1E2az+ZYFS4t0zi8x0w==
+chart.js@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.9.0.tgz#ebd700719922ba4963c84a4792f7af88e3a4840c"
+  integrity sha512-qgbY2tObinNst84qlWYiNTvszJSKoyoYiOjqOztUaW88N+Xk7QFJ9PasO+w0G1+NkxJzKzun7kUSZd7oWLCIDQ==
   dependencies:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
@@ -2879,6 +2879,11 @@ chartjs-color@^2.1.0:
   dependencies:
     chartjs-color-string "^0.6.0"
     color-convert "^0.5.3"
+
+chartkick@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/chartkick/-/chartkick-3.1.1.tgz#c0ac91383f7c3a05dc67493b5c7f4a1469c87878"
+  integrity sha512-7M8VR99o0W0feas1HP/yc7pXnZElqNn2V6RMEU2TfYr/Emb5PMIL4GeuNbui8idaZ0en29cz5cbynuRcAFieDA==
 
 chokidar@^2.0.0, chokidar@^2.0.2, chokidar@^2.0.4:
   version "2.1.6"
@@ -10048,6 +10053,13 @@ react-chartjs-2@^2.7.4:
   dependencies:
     lodash "^4.17.4"
     prop-types "^15.5.8"
+
+react-chartkick@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/react-chartkick/-/react-chartkick-0.3.2.tgz#c57785258424dae19b77836c92136841656ba28c"
+  integrity sha512-IhBhgg+UfAurwZB7kzhu4UF6GjJso5XOe/XZmTVDzqTVrahbTCMaM8bY2VzGl3A/BmqZ3S/38vyiPDvxtOJ/tg==
+  dependencies:
+    chartkick "^3.1.1"
 
 react-context-toolbox@^2.0.2:
   version "2.0.2"

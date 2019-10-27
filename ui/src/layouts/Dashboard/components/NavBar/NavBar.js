@@ -51,8 +51,6 @@ const NavBar = props => {
     if (openMobile) {
       onMobileClose && onMobileClose();
     }
-    
-    console.log(web3);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.location.pathname]);
