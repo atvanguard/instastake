@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Typography } from '@material-ui/core';
+import { AppContext } from 'contexts/AppContext';
 
-import { AppContext } from '../../../../contexts/AppContext';
+import { Preferences } from './Preferences';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -26,19 +27,7 @@ const useStyles = makeStyles(theme => ({
 
 const Header = props => {
   const { className, ...rest } = props;
-  const { web3 } = useContext(AppContext);
-  const [currentAccount, setCurrentAccount] = useState();
-
-  useEffect(() => {
-    const init = async () => {
-      if (web3) {
-        const account = await web3.getAccount()
-        setCurrentAccount(account);
-      }
-    }
-    init();
-  }, [web3]);
-
+  const { currentAccount } = useContext(AppContext);
   const classes = useStyles();
 
   return (
@@ -60,7 +49,7 @@ const Header = props => {
       >
         Happy Investing, {currentAccount}
       </Typography>
-      <Typography variant="subtitle1">Here's what's happening</Typography>
+      <Preferences />
     </div>
   );
 };

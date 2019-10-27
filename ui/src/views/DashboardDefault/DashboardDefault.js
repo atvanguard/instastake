@@ -1,21 +1,13 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Grid } from '@material-ui/core';
-
 import { Page } from 'components';
 import {
   Header,
-  LatestProjects,
-  NewProjects,
-  RealTime,
-  RoiPerCustomer,
-  TeamTasks,
-  TodaysMoney,
-  SystemHealth,
-  PerformanceOverTime
+  PortfolioAllocation,
+  PortolioStore
 } from './components';
-
-import PortfolioAllocation from './components/PortfolioAllocation'
+import { AppContext } from '../../contexts/AppContext';
+import { Onboarding } from './components/Onboarding';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardDefault = () => {
   const classes = useStyles();
+  const { isOnboarding, portfolios } = useContext(AppContext);
 
   return (
     <Page
@@ -35,7 +28,15 @@ const DashboardDefault = () => {
       title="Default Dashboard"
     >
       <Header />
-      <PortfolioAllocation />
+      {
+        isOnboarding
+          ? <Onboarding />
+          : portfolios
+            ? <PortfolioAllocation />
+            : <PortolioStore />
+      }
+      
+      
     </Page>
   );
 };
