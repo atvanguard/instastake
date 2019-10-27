@@ -1,6 +1,6 @@
-import InstaStake from './InstaStake.json'
-import ERC20Artifact from './IERC20.json'
-import config from './config/default.json'
+import InstaStake from '../contracts/InstaStake.json'
+import ERC20Artifact from '../contracts/IERC20.json'
+import config from '../contracts/config/default.json'
 
 import getWeb3 from '../utils/getWeb3';
 
@@ -17,10 +17,11 @@ export default class Web3Client {
   async initialize() {
     if (!this.web3) this.web3 = await getWeb3();
     const networkId = await this.web3.eth.net.getId();
-    console.log('networkId', networkId)
+    const deployedNetwork = InstaStake.networks[networkId];
+
     this.instaStake = new this.web3.eth.Contract(
       InstaStake.abi,
-      InstaStake.networks[networkId].address
+      deployedNetwork && deployedNetwork.address
     ).methods;
   }
 
@@ -30,13 +31,15 @@ export default class Web3Client {
   }
 
   async getPortfolios() {
-    const portfolioId = await this.instaStake.portfolioId().call()
-    console.log('portfolioId', portfolioId)
-    const portfolios = []
-    for (let i = 0; i < portfolioId; i++) {
-      portfolios.push(await this.getTokenDistribution(i))
+    if (this.instaStake) {
+      const portfolioId = await this.instaStake.portfolioId().call()
+      console.log('portfolioId', portfolioId)
+      const portfolios = []
+      for (let i = 0; i < portfolioId; i++) {
+        portfolios.push(await this.getTokenDistribution(i))
+      }
+      return portfolios
     }
-    return portfolios
   }
 
   // async getFirstPortfolio() {
