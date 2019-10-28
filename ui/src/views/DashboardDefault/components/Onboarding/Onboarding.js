@@ -37,7 +37,8 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-export const Onboarding = (props) => {
+export const Onboarding =
+(props) => {
   const { toggle } = props;
   const classes = useStyles();
   const [step, setStep] = useState(0);
@@ -63,11 +64,12 @@ export const Onboarding = (props) => {
 
   return (
     <div className={classes.root}>
-      {
+      <PickAllocation setPreferences={setAllocationPreferences} />
+      {/* {
         step === 0
           ? <PickTimeFrame setPreferences={setTimePreferences} />
           : <PickAllocation setPreferences={setAllocationPreferences} />
-      }
+      } */}
     </div>
   )
 }
@@ -82,7 +84,7 @@ const PickTimeFrame = (props) => {
         <h4> How long would you like to stay invested for? </h4>
         <p>Choose the time duration based on when you think you'll need to withdraw your investment</p>
       </div>
-    
+
       <div className={classes.options}>
         <Card className={classes.card}>
           <CardActionArea onClick={() => setPreferences({ timeframe: 0 })}>

@@ -2,6 +2,7 @@ import KyberNetworkProxyInterface from '../contracts/KyberNetworkProxyInterface.
 import Matic from '../contracts/Matic.json';
 import MaticInvestor from '../contracts/MaticInvestor.json';
 import SynthetixInvestor from '../contracts/SynthetixInvestor.json';
+import Synthetix from '../contracts/ISynthetix.json';
 import StakeManager from '../contracts/StakeManager.json';
 import InstaStake from '../contracts/InstaStake.json'
 import ERC20Artifact from '../contracts/IERC20.json'
@@ -42,17 +43,22 @@ export default class Web3Client {
     this.maticInvestor = new this.web3.eth.Contract(
       MaticInvestor.abi,
       await this.getAddressFromArtifact(MaticInvestor)
-    ).methods;
+    );
 
-    // this.stakeManager = new this.web3.eth.Contract(
-    //   StakeManager.abi,
-    //   deployedNetwork && deployedNetwork.address
-    // ).methods;
+    this.stakeManager = new this.web3.eth.Contract(
+      StakeManager.abi,
+      await this.getAddressFromArtifact(StakeManager)
+    );
 
     this.synthetixInvestor = new this.web3.eth.Contract(
       SynthetixInvestor.abi,
       await this.getAddressFromArtifact(SynthetixInvestor)
-    ).methods;
+    );
+
+    this.synthetix = new this.web3.eth.Contract(
+      Synthetix.abi,
+      config.contracts.synthetix.Synthetix
+    );
   }
 
   async getAddressFromArtifact(artifact) {
@@ -102,16 +108,14 @@ export default class Web3Client {
   }
 
   async approve(srcToken, amount) {
-    if (!srcToken) {
-      srcToken = config.contracts.tokens.knc // default payment method
-    }
-    if (!amount) {
-      amount = '0x' + this.web3.utils.toBN(100).mul(SCALING_FACTOR).toString('hex')
-    }
+    srcToken = srcToken || config.contracts.tokens.knc;
+    amount = amount || '0x' + this.web3.utils.toBN(10).mul(SCALING_FACTOR).toString('hex')
+    console.log(srcToken, amount, this.instaStake.options.address)
     const token = new this.web3.eth.Contract(ERC20Artifact.abi, srcToken).methods
-    return token.approve(this.instaStake.options.address, amount).send({
+    console.log('token.balanceOf', await token.balanceOf(await this.getAccount()).call())
+    await token.approve(this.instaStake.options.address, amount).send({
       from: await this.getAccount(),
-      gas: 1000000
+      gas: 100000
     })
   }
 
@@ -125,9 +129,25 @@ export default class Web3Client {
     })
   }
 
-  async showBalance(portfolioId, user) {
-    const portfolio = await this.getPortfolio(portfolioId)
-    // @todo for all tokens get user Balance
-    console.log('portfolio ', portfolio);
+  async showBalance(portfolioId) {
+    const p = await this.getPortfolio(portfolioId)
+    const balances = []
+    for (let j = 0; j < p.investors.length; j++) {
+      const token = new this.web3.eth.Contract(ERC20Artifact.abi, p.investors[j]).methods
+      // const key = contractMap[p.tokens[j].toLowerCase()
+      let pool_size = 0;
+      if (p.investors[j].toLowerCase() === this.maticInvestor.options.address.toLowerCase()) {
+        pool_size = this.web3.utils.fromWei((await this.stakeManager.methods.validators(0).call()).bondedAmount)
+      } else if (p.investors[j].toLowerCase() === this.synthetixInvestor.options.address.toLowerCase()) {
+        pool_size = this.web3.utils.fromWei(await this.synthetix.methods.balanceOf(this.synthetixInvestor.options.address).call())
+      }
+      balances.push({
+        [contractMap[p.tokens[j].toLowerCase()]]: {
+          balance: this.web3.utils.fromWei(await token.balanceOf(await this.getAccount()).call()),
+          pool_size
+        }
+      })
+    }
+    return balances
   }
 }

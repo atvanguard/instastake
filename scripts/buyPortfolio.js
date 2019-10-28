@@ -26,9 +26,12 @@ async function execute() {
     web3.utils.fromWei(await synthetix.methods.balanceOf(userWallet).call()),
     web3.utils.fromWei(await synthetix.methods.allowance(userWallet, instaStake.options.address).call()),
     web3.utils.fromWei(await KNCInstance.methods.balanceOf(userWallet).call()),
-    web3.utils.fromWei(await KNCInstance.methods.allowance(userWallet, instaStake.options.address).call())
+    web3.utils.fromWei(await KNCInstance.methods.allowance(userWallet, instaStake.options.address).call()),
+    KNCInstance.options.address,
+    buyAmount,
+    instaStake.options.address
   )
-  // console.log(await instaStake.methods.buy(0, KNCInstance.options.address, buyAmount).send({ from: userWallet, gas: 1000000 }))
+  console.log(await instaStake.methods.buy(0, KNCInstance.options.address, buyAmount).send({ from: userWallet, gas: 1000000 }))
 }
 
 execute().then()

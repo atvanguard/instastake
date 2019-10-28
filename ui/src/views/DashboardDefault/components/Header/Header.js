@@ -28,23 +28,23 @@ const Header = props => {
   const { className, ...rest } = props;
   const { currentAccount, isOnboarding, web3 } = useContext(AppContext);
   const classes = useStyles();
-  
-  const [maticBalance, setMaticBalance] = useState();
-  const [synthetixBalance, setSynthetixBalance] = useState();
+
+  // const [maticBalance, setMaticBalance] = useState();
+  // const [synthetixBalance, setSynthetixBalance] = useState();
 
   useEffect(() => {
-    if (web3 && currentAccount) {
-      const fetchBalances = async () => {
-        console.log(web3);
-        const _maticBalance = (await web3.maticInvestor.balanceOf(currentAccount)).toString()
-        const _synthetixBalance = (await web3.synthetixInvestor.balanceOf(currentAccount)).toString();
+    // if (web3 && currentAccount) {
+    //   const fetchBalances = async () => {
+    //     console.log(web3);
+    //     const _maticBalance = (await web3.maticInvestor.balanceOf(currentAccount)).toString()
+    //     const _synthetixBalance = (await web3.synthetixInvestor.balanceOf(currentAccount)).toString();
 
-        setMaticBalance(_maticBalance);
-        setSynthetixBalance(_synthetixBalance);
-      }
+    //     setMaticBalance(_maticBalance);
+    //     setSynthetixBalance(_synthetixBalance);
+    //   }
 
-      fetchBalances();
-    }
+    //   fetchBalances();
+    // }
   }, [currentAccount, web3]);
 
   return (

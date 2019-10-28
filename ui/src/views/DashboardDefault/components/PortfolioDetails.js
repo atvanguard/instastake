@@ -44,12 +44,14 @@ const PortfolioDetails = props => {
   console.log('PortfolioDetails', props)
   const { web3 } = useContext(AppContext);
   const [distribution, setDistribution] = useState(null);
+  const [balances, setbalances] = useState(null);
 
   useEffect(() => {
     const init = async () => {
       if (web3) {
-        const distribution = await web3.getTokenDistribution(id)
-        console.log('distribution', distribution)
+        const distribution = await web3.getTokenDistribution(id);
+        console.log('distribution', distribution);
+        setbalances(JSON.stringify(await web3.showBalance(id)));
         setDistribution(distribution);
       }
     }
@@ -58,6 +60,9 @@ const PortfolioDetails = props => {
 
   return (
     <div className={classes.options}>
+      <p>
+        { balances }
+      </p>
       <Card className={classes.card}>
           <CardContent className={classes.cardContent}>
             <Typography variant='h4' component='h2'>Portfolio #1</Typography>

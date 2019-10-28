@@ -42,16 +42,18 @@ contract InstaStake is FundManagerAcl {
 
   function getPortfolio(uint8 portfolioStrategy)
     public view
-    returns(address[] memory tokens, uint256[] memory weights)
+    returns(address[] memory tokens, address[] memory investors, uint256[] memory weights)
   {
     Portfolio storage portfolio = portfolios[portfolioStrategy];
     uint256 length = portfolio.assets.length;
     tokens = new address[](length);
+    investors = new address[](length);
     weights = new uint256[](length);
 
     for (uint256 i = 0; i < length; i++) {
       Asset storage asset = portfolio.assets[i];
       tokens[i] = address(asset.token);
+      investors[i] = address(asset.tokenInvestor);
       weights[i] = asset.weight;
     }
   }

@@ -35,6 +35,7 @@ async function execute() {
   const instaStake = getContract(InstaStake)
 
   // A. Create portfolio
+  console.log('Setting up portfolio with 70% Synthetix and 30% Matic Token...')
   let p = await instaStake.methods.createPortfolio(
     [
       synthetix.options.address,
@@ -44,30 +45,18 @@ async function execute() {
       synthetixInvestor.options.address,
       maticInvestor.options.address
     ],
-    // [100, 0]
     [70, 30]
   ).send({ from: accounts[0], gas: 1000000 })
-  console.log(p)
-
-  // let p = await instaStake.methods.createPortfolio(
-  //   [
-  //     synthetix.options.address
-  //   ],
-  //   [
-  //     synthetixInvestor.options.address
-  //   ],
-  //   [100]
-  // ).send({ from: accounts[0], gas: 1000000 })
   // console.log(p)
 
   // B. become matic validator
+  console.log('Setting up a matic validator whom portfolio will delegate to...')
   // swap KNC for matic tokens
   const staker = userWallet;
   const srcQty = getAmount(100)
   const stakeAmount = getAmount(1)
-  // await KNCInstance.methods.transfer(staker, stakeAmount).send({ from: userWallet, gas: 1000000})
-  console.log('KNCInstance.balanceOf(userWallet)', await KNCInstance.methods.balanceOf(userWallet).call())
-  // console.log('KNCInstance.balanceOf(staker)', web3.utils.fromWei(await KNCInstance.methods.balanceOf(staker).call()))
+  // console.log('KNCInstance.balanceOf(userWallet)', await KNCInstance.methods.balanceOf(userWallet).call())
+  console.log('Using KyberSwap to get Matic tokens...')
   const { expectedRate } = await networkProxyInstance.methods.getExpectedRate(
     KNCInstance.options.address, // srcToken
     maticToken.options.address, // destToken
@@ -81,16 +70,20 @@ async function execute() {
     maticToken.options.address,
     expectedRate
   ).send({ from: userWallet, gas: 1000000 })
-  console.log('swapped')
   await maticToken.methods.transfer(staker, stakeAmount).send({ from: userWallet, gas: 1000000})
   await maticToken.methods.approve(stakeManager.options.address, stakeAmount).send({ from: staker, gas: 1000000 })
   const validatorId = await stakeManager.methods.validatorID().call();
-  console.log('validatorId', validatorId)
-  console.log('maticToken.balanceOf(userWallet)', web3.utils.fromWei(await maticToken.methods.balanceOf(userWallet).call()))
+  // console.log('maticToken.balanceOf(userWallet)', web3.utils.fromWei(await maticToken.methods.balanceOf(userWallet).call()))
+  console.log('Staking...')
   await stakeManager.methods.stake(stakeAmount).send({ from: staker, gas: 1000000 })
-  console.log('staked')
+  console.log('Validator staked. Validator Id is', validatorId)
   await maticInvestor.methods.whitelistValidator(validatorId).send({ from: userWallet, gas: 1000000 });
-  console.log('whitelisted validator')
+  console.log('whitelisted validator for the portfolio..')
+
+  // Setup tasks
+  const buyAmount = getAmount(100)
+  await synthetix.methods.transfer(userWallet, buyAmount).send({ from: '0x3644B986B3F5Ba3cb8D5627A22465942f8E06d09', gas: 1000000})
+  await synthetix.methods.approve(instaStake.options.address, buyAmount).send({ from: userWallet, gas: 1000000 });
 
   // Buy
   // const buyAmount = getAmount(10)

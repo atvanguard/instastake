@@ -31,9 +31,6 @@ const DashboardDefault = () => {
         console.log(portfolios)
         setPortfolios(portfolios);
       }
-      // else {
-      //   setPortfolios([[ ['Blueberry', 44], ['Strawberry', 23] ]]);
-      // }
     }
     init();
   }, [web3]);
@@ -52,8 +49,8 @@ const DashboardDefault = () => {
             ? <PortfolioAllocation />
             : <PortolioStore />
       }
-      
-      
+
+
     </Page>
   );
 };
