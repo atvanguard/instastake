@@ -21,10 +21,10 @@ export const Preferences = () => {
   const [time, setTime] = useState();
 
   useEffect(() => {
-    setRisk(preferences.risk.risk);
+    setRisk(preferences.risk);
     setTime(preferences.timeframe.timeframe);
   }, [preferences]);
-  
+
   return (
     <div className={classes.root}>
       {

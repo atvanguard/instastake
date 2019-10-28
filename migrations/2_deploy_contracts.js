@@ -1,4 +1,5 @@
-const config = require('../config/default.json')
+// const config = require(`../config/${process.env.NODE_ENV}.json`)
+const config = require(`../config/default.json`)
 
 const InstaStake = artifacts.require("InstaStake");
 const StakeManager = artifacts.require("StakeManager");
@@ -15,6 +16,7 @@ module.exports = async function(deployer) {
   console.log({
     StakeManager: StakeManager.address,
     MaticInvestor: MaticInvestor.address,
+    SynthetixInvestor: SynthetixInvestor.address,
     InstaStake: InstaStake.address,
   })
 };

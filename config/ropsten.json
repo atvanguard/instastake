@@ -1,0 +1,14 @@
+{
+  "contracts": {
+    "kyber": {
+      "KyberNetworkProxy": "0x818E6FECD516Ecc3849DAf6845e3EC868087B755"
+    },
+    "tokens": {
+      "knc": "0xaD6D458402F60fD3Bd25163575031ACDce07538D",
+      "omg": "0x4BFBa4a8F28755Cb2061c413459EE562c6B9c51b"
+    },
+    "synthetix": {
+        "Synthetix": "0x013AE307648f529aa72c5767A334DDd37aaB43c3"
+    }
+  }
+}
