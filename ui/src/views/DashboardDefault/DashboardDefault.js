@@ -1,21 +1,13 @@
-import React from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Grid } from '@material-ui/core';
-
 import { Page } from 'components';
 import {
   Header,
-  LatestProjects,
-  NewProjects,
-  RealTime,
-  RoiPerCustomer,
-  TeamTasks,
-  TodaysMoney,
-  SystemHealth,
-  PerformanceOverTime
+  PortfolioAllocation,
+  PortolioStore
 } from './components';
-
-import PortfolioAllocation from './components/PortfolioAllocation'
+import { AppContext } from '../../contexts/AppContext';
+import { Onboarding } from './components/Onboarding';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +20,21 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardDefault = () => {
   const classes = useStyles();
+  const { web3, isOnboarding } = useContext(AppContext);
+  const [portfolios, setPortfolios] = useState(null);
+  const [showPreferences, setShowPreferences] = useState(isOnboarding);
+
+  useEffect(() => {
+    const init = async () => {
+      if (web3) {
+        const portfolios = await web3.getPortfolios()
+        console.log(portfolios)
+        setPortfolios(portfolios);
+      }
+    }
+    init();
+  }, [web3]);
+
 
   return (
     <Page
@@ -35,7 +42,15 @@ const DashboardDefault = () => {
       title="Default Dashboard"
     >
       <Header />
-      <PortfolioAllocation />
+      {
+        showPreferences
+          ? <Onboarding toggle={() => setShowPreferences(!showPreferences)} />
+          : portfolios
+            ? <PortfolioAllocation />
+            : <PortolioStore />
+      }
+
+
     </Page>
   );
 };

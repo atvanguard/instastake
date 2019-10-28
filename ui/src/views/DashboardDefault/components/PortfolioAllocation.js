@@ -3,6 +3,8 @@ import { PieChart } from 'react-chartkick'
 import 'chart.js'
 
 import { AppContext } from '../../../contexts/AppContext';
+import { Typography } from '@material-ui/core';
+import PortfolioDetails from './PortfolioDetails';
 
 const PortfolioAllocation = props => {
   const { web3 } = useContext(AppContext);
@@ -24,13 +26,14 @@ const PortfolioAllocation = props => {
 
   return (
     <div>
+      <Typography variant='h2'>Your Allocations: </Typography>
       {portfolios && portfolios.length ? (
         portfolios.map((tokenDistribution, index) => {
-          return <PieChart data = {tokenDistribution} key={index} />
+          return <PortfolioDetails key={index} id={index} />
+          // return <PieChart data = {tokenDistribution} key={index} />
         })
-      ) : (
-        <PieChart data = {[ ['Blueberry', 44], ['Strawberry', 23] ]} />
-      )}
+      ) : null
+      }
     </div>
   )
 }

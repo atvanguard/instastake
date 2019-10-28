@@ -4,3 +4,4 @@ node_modules
 =======
 build
 >>>>>>> d510be57012d82c22b74b2c1845f00797502f92f
+*.env

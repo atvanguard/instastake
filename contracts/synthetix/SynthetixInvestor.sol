@@ -6,7 +6,7 @@ import { ISynthetix } from "./interfaces/ISynthetix.sol";
 import { Investor } from "../Investor.sol";
 
 contract SynthetixInvestor is Investor, ERC20 {
-  ISynthetix synthetix;
+  ISynthetix public synthetix;
 
   constructor(address _synthetix) public {
     synthetix = ISynthetix(_synthetix);
@@ -14,7 +14,8 @@ contract SynthetixInvestor is Investor, ERC20 {
 
   function invest(address user, uint256 amount) external {
     // 0x73555344 = sUSD
-    synthetix.issueSynths(bytes32(uint256(0x73555344) << 224), amount);
+    // synthetix.issueSynths(bytes32(uint256(0x73555344) << 224), amount);
+    // synthetix.issueMaxSynths(bytes32(uint256(0x73555344) << 224));
 
     // @todo Mint in proportion to the current pool size
     _mint(user, amount);

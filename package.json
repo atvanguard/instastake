@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "ganache": "ganache-cli --db db --accounts 10 --defaultBalanceEther 1000000000000 --mnemonic 'gesture rather obey video awake genuine patient base soon parrot upset lounge' --networkId 5777 -l 0x7a1200 -t 2018-03-13T00:00:00",
     "start": "cd ui && yarn start",
-    "compile": "truffle compile",
-    "test": "truffle test"
+    "truffle:compile": "truffle compile",
+    "truffle:migrate": "truffle migrate --reset && cp build/contracts/* ui/src/contracts/",
+    "setup_portfolio": "node scripts/createPortfolio.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   "dependencies": {
     "@openzeppelin/contracts": "^2.3.0",
     "synthetix": "github:atvanguard/synthetix#b9d1f225b26e723961a20f3482b9552a4b431480",
+    "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.2.2"
   }
 }
