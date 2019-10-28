@@ -27,6 +27,7 @@ contract ISynthetix {
     // ========== PUBLIC FUNCTIONS ==========
 
     function balanceOf(address account) public view returns (uint);
+    function debtBalanceOf(address account) public view returns (uint);
     function transfer(address to, uint value) public returns (bool);
     function approve(address spender, uint value) public returns (bool);
     function effectiveValue(bytes32 sourceCurrencyKey, uint sourceAmount, bytes32 destinationCurrencyKey) public view returns (uint);
@@ -50,4 +51,5 @@ contract ISynthetix {
     function getSynth(bytes32 currencyKey) public view returns (ISynth);
     function debtBalanceOf(address issuer, bytes32 currencyKey) public view returns (uint);
     function issueSynths(bytes32 currencyKey, uint amount) public;
+    function issueMaxSynths(bytes32 currencyKey) public;
 }

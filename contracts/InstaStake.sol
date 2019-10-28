@@ -14,7 +14,7 @@ contract InstaStake is FundManagerAcl {
   struct Asset {
     IERC20 token;
     Investor tokenInvestor;
-    uint8 weight;
+    uint256 weight;
   }
 
   struct Portfolio {
@@ -31,7 +31,7 @@ contract InstaStake is FundManagerAcl {
     kyberProxy = KyberNetworkProxyInterface(_kyberProxy);
   }
 
-  function createPortfolio(IERC20[] calldata tokens, Investor[] calldata investorContracts, uint8[] calldata weights) external onlyFundManager {
+  function createPortfolio(IERC20[] calldata tokens, Investor[] calldata investorContracts, uint256[] calldata weights) external onlyFundManager {
     Portfolio storage portfolio = portfolios[portfolioId];
     for(uint8 i = 0; i < tokens.length; i++) {
       Asset memory asset = Asset(tokens[i], investorContracts[i], weights[i]);
@@ -42,63 +42,80 @@ contract InstaStake is FundManagerAcl {
 
   function getPortfolio(uint8 portfolioStrategy)
     public view
-    returns(address[] memory tokens, uint8[] memory weights)
+    returns(address[] memory tokens, uint256[] memory weights)
   {
     Portfolio storage portfolio = portfolios[portfolioStrategy];
     uint256 length = portfolio.assets.length;
     tokens = new address[](length);
-    weights = new uint8[](length);
+    weights = new uint256[](length);
 
     for (uint256 i = 0; i < length; i++) {
       Asset storage asset = portfolio.assets[i];
       tokens[i] = address(asset.token);
       weights[i] = asset.weight;
     }
-
-    // return(tokens, weights);
   }
 
-  function buy(uint8 portfolioStrategy, IERC20[] calldata srcTokens, uint256 amount) external {
+  function buy2(uint8 portfolioStrategy, IERC20 srcToken, uint256 amount)
+    external view
+    returns(uint256[] memory q, address[] memory  b, address[] memory c){
     Portfolio storage portfolio = portfolios[portfolioStrategy];
     require(portfolio.assets.length > 0, "Invalid portfolio ID");
-    for (uint8 i = 0; i < portfolio.assets.length; i++) {
+    q = new uint256[](portfolio.assets.length);
+    b = new address[](portfolio.assets.length);
+    c = new address[](portfolio.assets.length);
+    for (uint256 i = 0; i < portfolio.assets.length; i++) {
       Asset storage asset = portfolio.assets[i];
       IERC20 destToken = asset.token;
-      IERC20 srcToken = srcTokens[i];
+      uint256 srcQty = (amount * asset.weight) / 100;
+      q[i] = srcQty;
+      b[i] = address(destToken);
+      c[i] = address(asset.tokenInvestor);
+    }
+  }
+
+  function buy(uint8 portfolioStrategy, IERC20 srcToken, uint256 amount) external {
+    Portfolio storage portfolio = portfolios[portfolioStrategy];
+    require(portfolio.assets.length > 0, "Invalid portfolio ID");
+    // obtain destToken from Kyber swap
+    require(
+      srcToken.transferFrom(msg.sender, address(this), amount),
+      "srcToken transfer failed"
+    );
+    require(
+      srcToken.approve(address(kyberProxy), amount),
+      "srcToken approve failed"
+    );
+
+    for (uint256 i = 0; i < portfolio.assets.length; i++) {
+      Asset storage asset = portfolio.assets[i];
+      IERC20 destToken = asset.token;
       uint256 srcQty = (amount * asset.weight) / 100;
       address payable destAddress = address(uint160(address(asset.tokenInvestor)));
+      if (srcQty == 0) continue;
 
-      uint256 destAmount;
-      if (address(destToken) == address(srcToken)) {
-        // user wants to pay directly with the destToken
+      // synthetix doesnt work with kyber swap locally, as a hack pull directly from users account
+      if (address(destToken) == 0xcB09297151aE94f46a73c2d7c04B0F2c30f64494) {
         require(
           destToken.transferFrom(msg.sender, destAddress, srcQty),
-          "destToken.transferFrom failed"
-        );
-        destAmount = srcQty;
-      } else {
-        // obtain destToken from Kyber swap
-        require(
-          srcToken.transferFrom(msg.sender, address(this), amount),
           "srcToken transfer failed"
         );
-        require(
-          srcToken.approve(address(kyberProxy), amount),
-          "srcToken approve failed"
-        );
-        // Get the minimum conversion rate
-        uint256 minConversionRate;
-        (minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, srcQty);
-        swapTokenToToken(
-          srcToken,
-          srcQty,
-          destToken,
-          destAddress,
-          minConversionRate
-        );
-        // @todo cehck partial fills
-        destAmount = (srcQty / (10 ** 18)) * minConversionRate; // works for whole numbers of srcQty
+        asset.tokenInvestor.invest(msg.sender, srcQty);
+        continue;
       }
+
+      // Get the minimum conversion rate
+      uint256 minConversionRate;
+      (minConversionRate,) = kyberProxy.getExpectedRate(srcToken, destToken, srcQty);
+      swapTokenToToken(
+        srcToken,
+        srcQty,
+        destToken,
+        destAddress,
+        minConversionRate
+      );
+      // @todo check partial fills
+      uint256 destAmount = (srcQty / (10 ** 18)) * minConversionRate; // works for whole numbers of srcQty
       asset.tokenInvestor.invest(msg.sender, destAmount);
     }
   }

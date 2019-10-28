@@ -9,6 +9,8 @@ import config from '../contracts/config/default.json'
 
 import getWeb3 from '../utils/getWeb3';
 
+let SCALING_FACTOR
+
 const contractMap = {
   [config.contracts.tokens.omg.toLowerCase()]: 'Matic',
   [config.contracts.synthetix.Synthetix.toLowerCase()]: 'SNX'
@@ -21,38 +23,45 @@ export default class Web3Client {
 
   async initialize() {
     if (!this.web3) this.web3 = await getWeb3();
-    const networkId = await this.web3.eth.net.getId();
-    const deployedNetwork = InstaStake.networks[networkId];
-
+    SCALING_FACTOR = this.web3.utils.toBN(10).pow(this.web3.utils.toBN(18))
     this.instaStake = new this.web3.eth.Contract(
       InstaStake.abi,
-      deployedNetwork && deployedNetwork.address
-    ).methods;
+      await this.getAddressFromArtifact(InstaStake)
+    );
 
-    this.kyberNetworkProxyInterface = new this.web3.eth.Contract(
-      KyberNetworkProxyInterface.abi,
-      deployedNetwork && deployedNetwork.address
-    ).methods;
+    // this.kyberNetworkProxyInterface = new this.web3.eth.Contract(
+    //   KyberNetworkProxyInterface.abi,
+    //   deployedNetwork && deployedNetwork.address
+    // ).methods;
 
-    this.matic = new this.web3.eth.Contract(
-      Matic.abi,
-      deployedNetwork && deployedNetwork.address
-    ).methods;
+    // this.matic = new this.web3.eth.Contract(
+    //   Matic.abi,
+    //   deployedNetwork && deployedNetwork.address
+    // ).methods;
 
     this.maticInvestor = new this.web3.eth.Contract(
       MaticInvestor.abi,
-      deployedNetwork && deployedNetwork.address
+      await this.getAddressFromArtifact(MaticInvestor)
     ).methods;
-    
-    this.stakeManager = new this.web3.eth.Contract(
-      StakeManager.abi,
-      deployedNetwork && deployedNetwork.address
-    ).methods;
+
+    // this.stakeManager = new this.web3.eth.Contract(
+    //   StakeManager.abi,
+    //   deployedNetwork && deployedNetwork.address
+    // ).methods;
 
     this.synthetixInvestor = new this.web3.eth.Contract(
       SynthetixInvestor.abi,
-      deployedNetwork && deployedNetwork.address
+      await this.getAddressFromArtifact(SynthetixInvestor)
     ).methods;
+  }
+
+  async getAddressFromArtifact(artifact) {
+    const networkId = await this.web3.eth.net.getId();
+    console.log('networkId', networkId, artifact.networks)
+    if (artifact && artifact.networks && artifact.networks[networkId]) {
+      return artifact.networks[networkId].address;
+    }
+    throw new Error(`address for ${artifact.contractName} not found`)
   }
 
   async getAccount() {
@@ -62,7 +71,7 @@ export default class Web3Client {
 
   async getPortfolios() {
     if (this.instaStake) {
-      const portfolioId = await this.instaStake.portfolioId().call()
+      const portfolioId = await this.instaStake.methods.portfolioId().call()
       console.log('portfolioId', portfolioId)
       const portfolios = []
       for (let i = 0; i < portfolioId; i++) {
@@ -89,19 +98,31 @@ export default class Web3Client {
   }
 
   getPortfolio(portfolioId) {
-    return this.instaStake.getPortfolio(portfolioId).call()
+    return this.instaStake.methods.getPortfolio(portfolioId).call()
   }
 
-  approve(srcToken, amount) {
-    const token = new this.web3.Contract(ERC20Artifact.abi, srcToken).methods
-    return token.approve(this.instaStake.options.address, amount)
+  async approve(srcToken, amount) {
+    if (!srcToken) {
+      srcToken = config.contracts.tokens.knc // default payment method
+    }
+    if (!amount) {
+      amount = '0x' + this.web3.utils.toBN(100).mul(SCALING_FACTOR).toString('hex')
+    }
+    const token = new this.web3.eth.Contract(ERC20Artifact.abi, srcToken).methods
+    return token.approve(this.instaStake.options.address, amount).send({
+      from: await this.getAccount(),
+      gas: 1000000
+    })
   }
 
   async buy(portfolioId, srcToken, amount) {
-    const portfolio = await this.getPortfolio(portfolioId)
-    // @todo for local testing put in the snx fix
-    const tokens = [srcToken]
-    return this.instaStake.buy(portfolioId, tokens, amount).send()
+    console.log('portfolioId', portfolioId)
+    srcToken = srcToken || config.contracts.tokens.knc;
+    amount = amount || '0x' + this.web3.utils.toBN(10).mul(SCALING_FACTOR).toString('hex')
+    return this.instaStake.methods.buy(parseInt(portfolioId, 10), srcToken, amount).send({
+      from: await this.getAccount(),
+      gas: 1000000
+    })
   }
 
   async showBalance(portfolioId, user) {
