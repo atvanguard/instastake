@@ -37,7 +37,8 @@ const useStyles = makeStyles(() => ({
   }
 }))
 
-export const Onboarding = () => {
+export const Onboarding = (props) => {
+  const { toggle } = props;
   const classes = useStyles();
   const [step, setStep] = useState(0);
   const { handleSetInvestorPreferences, preferences } = useContext(AppContext);
@@ -56,8 +57,8 @@ export const Onboarding = () => {
       risk
     });
 
-    console.log('risk -> ', risk);
     setStep(-1);
+    toggle();
   }
 
   return (

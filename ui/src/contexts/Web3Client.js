@@ -1,3 +1,8 @@
+import KyberNetworkProxyInterface from '../contracts/KyberNetworkProxyInterface.json';
+import Matic from '../contracts/Matic.json';
+import MaticInvestor from '../contracts/MaticInvestor.json';
+import SynthetixInvestor from '../contracts/SynthetixInvestor.json';
+import StakeManager from '../contracts/StakeManager.json';
 import InstaStake from '../contracts/InstaStake.json'
 import ERC20Artifact from '../contracts/IERC20.json'
 import config from '../contracts/config/default.json'
@@ -21,6 +26,31 @@ export default class Web3Client {
 
     this.instaStake = new this.web3.eth.Contract(
       InstaStake.abi,
+      deployedNetwork && deployedNetwork.address
+    ).methods;
+
+    this.kyberNetworkProxyInterface = new this.web3.eth.Contract(
+      KyberNetworkProxyInterface.abi,
+      deployedNetwork && deployedNetwork.address
+    ).methods;
+
+    this.matic = new this.web3.eth.Contract(
+      Matic.abi,
+      deployedNetwork && deployedNetwork.address
+    ).methods;
+
+    this.maticInvestor = new this.web3.eth.Contract(
+      MaticInvestor.abi,
+      deployedNetwork && deployedNetwork.address
+    ).methods;
+    
+    this.stakeManager = new this.web3.eth.Contract(
+      StakeManager.abi,
+      deployedNetwork && deployedNetwork.address
+    ).methods;
+
+    this.synthetixInvestor = new this.web3.eth.Contract(
+      SynthetixInvestor.abi,
       deployedNetwork && deployedNetwork.address
     ).methods;
   }
@@ -77,5 +107,6 @@ export default class Web3Client {
   async showBalance(portfolioId, user) {
     const portfolio = await this.getPortfolio(portfolioId)
     // @todo for all tokens get user Balance
+    console.log('portfolio ', portfolio);
   }
 }

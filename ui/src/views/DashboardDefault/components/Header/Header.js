@@ -2,13 +2,12 @@ import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Typography } from '@material-ui/core';
+import { Card, CardContent, Typography,} from '@material-ui/core';
 import { AppContext } from 'contexts/AppContext';
 
 import { Preferences } from './Preferences';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
   dates: {
     display: 'flex',
     alignItems: 'center',
@@ -27,30 +26,45 @@ const useStyles = makeStyles(theme => ({
 
 const Header = props => {
   const { className, ...rest } = props;
-  const { currentAccount } = useContext(AppContext);
+  const { currentAccount, isOnboarding, web3 } = useContext(AppContext);
   const classes = useStyles();
+  
+  const [maticBalance, setMaticBalance] = useState();
+  const [synthetixBalance, setSynthetixBalance] = useState();
+
+  useEffect(() => {
+    if (web3 && currentAccount) {
+      const fetchBalances = async () => {
+        console.log(web3);
+        const _maticBalance = (await web3.maticInvestor.balanceOf(currentAccount)).toString()
+        const _synthetixBalance = (await web3.synthetixInvestor.balanceOf(currentAccount)).toString();
+
+        setMaticBalance(_maticBalance);
+        setSynthetixBalance(_synthetixBalance);
+      }
+
+      fetchBalances();
+    }
+  }, [currentAccount, web3]);
 
   return (
-    <div
+    <Card
       {...rest}
       className={clsx(classes.root, className)}
     >
-      <Typography
-        component="h2"
-        gutterBottom
-        variant="overline"
-      >
-        Home
-      </Typography>
-      <Typography
-        component="h1"
-        gutterBottom
-        variant="h3"
-      >
-        Happy Investing, {currentAccount}
-      </Typography>
-      <Preferences />
-    </div>
+      <CardContent>
+        <Typography
+          component="h1"
+          gutterBottom
+          variant="h3"
+        >
+          Happy Investing, {currentAccount}
+        </Typography>
+
+        {
+         !isOnboarding && <Preferences />}
+      </CardContent>
+    </Card>
   );
 };
 

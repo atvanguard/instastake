@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Page } from 'components';
 import {
@@ -20,7 +20,24 @@ const useStyles = makeStyles(theme => ({
 
 const DashboardDefault = () => {
   const classes = useStyles();
-  const { isOnboarding, portfolios } = useContext(AppContext);
+  const { web3, isOnboarding } = useContext(AppContext);
+  const [portfolios, setPortfolios] = useState(null);
+  const [showPreferences, setShowPreferences] = useState(isOnboarding);
+
+  useEffect(() => {
+    const init = async () => {
+      if (web3) {
+        const portfolios = await web3.getPortfolios()
+        console.log(portfolios)
+        setPortfolios(portfolios);
+      }
+      // else {
+      //   setPortfolios([[ ['Blueberry', 44], ['Strawberry', 23] ]]);
+      // }
+    }
+    init();
+  }, [web3]);
+
 
   return (
     <Page
@@ -29,8 +46,8 @@ const DashboardDefault = () => {
     >
       <Header />
       {
-        isOnboarding
-          ? <Onboarding />
+        showPreferences
+          ? <Onboarding toggle={() => setShowPreferences(!showPreferences)} />
           : portfolios
             ? <PortfolioAllocation />
             : <PortolioStore />

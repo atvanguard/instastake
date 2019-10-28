@@ -61,29 +61,29 @@ contract('InstaStake', async function(accounts) {
   //   await this.maticInvestor.whitelistValidator(this.validatorId);
   // })
 
-  // it('buy', async function() {
-  //   console.log('userWallet', userWallet)
-  //   console.log('knc.balanceOf(userWallet)', (await this.KNCInstance.balanceOf(userWallet)).toString())
-  //   const amount = web3.utils.toWei(web3.utils.toBN(2))
-  //   await this.KNCInstance.approve(this.instaStake.address, amount, { from: userWallet });
+  it('buy', async function() {
+    console.log('userWallet', userWallet)
+    console.log('knc.balanceOf(userWallet)', (await this.KNCInstance.balanceOf(userWallet)).toString())
+    const amount = web3.utils.toWei(web3.utils.toBN(2))
+    await this.KNCInstance.approve(this.instaStake.address, amount, { from: userWallet });
 
-  //   console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
-  //   console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
-  //   const buy = await this.instaStake.buy(
-  //     this.portfolio,
-  //     [this.KNCInstance.address],
-  //     amount,
-  //     { from: userWallet }
-  //   );
-  //   console.log('bought into portfolio')
-  //   console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
-  //   console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
-  //   const investedPoolSize = await this.stakeManager.totalDelegated()
-  //   console.log('matic token invested pool size', investedPoolSize.toString())
-  //   console.log('matic token investor ROI',
-  //     investedPoolSize.div(await this.maticInvestor.balanceOf(userWallet)).toString()
-  //   )
-  // })
+    console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
+    console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
+    const buy = await this.instaStake.buy(
+      this.portfolio,
+      [this.KNCInstance.address],
+      amount,
+      { from: userWallet }
+    );
+    console.log('bought into portfolio')
+    console.log('maticInvestor.balanceOf(userWallet)', (await this.maticInvestor.balanceOf(userWallet)).toString())
+    console.log('matic.balanceOf(maticInvestor)', (await this.maticToken.balanceOf(this.maticInvestor.address)).toString())
+    const investedPoolSize = await this.stakeManager.totalDelegated()
+    console.log('matic token invested pool size', investedPoolSize.toString())
+    console.log('matic token investor ROI',
+      investedPoolSize.div(await this.maticInvestor.balanceOf(userWallet)).toString()
+    )
+  })
 
   // it('rewardValidator', async function() {
   //   const reward = web3.utils.toWei(web3.utils.toBN(10))
