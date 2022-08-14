@@ -25,7 +25,7 @@
     "truffle": "^5.0.37"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^2.3.0",
+    "@openzeppelin/contracts": "^4.7.2",
     "synthetix": "github:atvanguard/synthetix#b9d1f225b26e723961a20f3482b9552a4b431480",
     "truffle-hdwallet-provider": "^1.0.17",
     "web3": "^1.2.2"
